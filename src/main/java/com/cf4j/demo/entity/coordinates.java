@@ -1,10 +1,10 @@
 package com.cf4j.demo.entity;
 
-public class coordinates {
+public class Coordinates {
 	public float x;
 	public float y;
 	
-	public coordinates(float x, float y) {
+	public Coordinates(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
