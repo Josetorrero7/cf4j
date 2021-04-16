@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.cf4j.demo.entity.Serie;
+import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.entity.Coordinates;
 import com.cf4j.demo.service.UserKnnComparisonService;
 
@@ -34,7 +34,7 @@ public class UserKnnComparisonServiceImpl implements UserKnnComparisonService {
 	private static final UserKNN.AggregationApproach AGGREGATION_APPROACH = UserKNN.AggregationApproach.DEVIATION_FROM_MEAN;
 
 	@Override
-	public List<Coordinates> listUserKnnComparison(List<Serie> series) throws IOException {
+	public List<Coordinates> listUserKnnComparison(List<Board> series) throws IOException {
 
 		// DataModel load
 		DataModel datamodel = BenchmarkDataModels.MovieLens100K();

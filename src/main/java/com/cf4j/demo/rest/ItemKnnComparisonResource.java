@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cf4j.demo.entity.Coordinates;
 
-import com.cf4j.demo.entity.Serie;
+import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.service.ItemKnnComparisonService;
 
 
@@ -32,7 +32,7 @@ public class ItemKnnComparisonResource {
 
 	@PostMapping("/itemKnnComparison")
 	@ResponseBody
-	public ResponseEntity<List<Coordinates>> listItemKnnComparison(@RequestBody List<Serie> series)
+	public ResponseEntity<List<Coordinates>> listItemKnnComparison(@RequestBody List<Board> series)
 			throws IOException {
 		List<Coordinates> result = itemKnnComparisonService.listItemKnnComparison(series);
 		return new ResponseEntity<List<Coordinates>>(result, HttpStatus.OK);

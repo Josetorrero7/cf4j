@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cf4j.demo.entity.Coordinates;
 
-import com.cf4j.demo.entity.Serie;
+import com.cf4j.demo.entity.Board;
 
 import com.cf4j.demo.service.UserKnnComparisonService;
 
@@ -31,7 +31,7 @@ public class UserKnnComparisonResource {
 
 	@PostMapping("/userKnnComparison")
 	@ResponseBody
-	public ResponseEntity<List<Coordinates>> listMatrixFactorizationComparison(@RequestBody List<Serie> series)
+	public ResponseEntity<List<Coordinates>> listMatrixFactorizationComparison(@RequestBody List<Board> series)
 			throws IOException {
 		List<Coordinates> result = userKnnComparisonService.listUserKnnComparison(series);
 		return new ResponseEntity<List<Coordinates>>(result, HttpStatus.OK);

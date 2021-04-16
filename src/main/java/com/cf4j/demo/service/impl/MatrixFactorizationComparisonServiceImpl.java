@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.cf4j.demo.entity.Serie;
+import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.entity.Coordinates;
 import com.cf4j.demo.service.MatrixFactorizationComparisonService;
 import com.cf4j.demo.utils.utils;
@@ -38,19 +38,19 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 	private static final long RANDOM_SEED = 43;
 
 	@Override
-	public List<Coordinates> listMatrixFactorizationComparison(List<Serie> series) throws IOException {
+	public List<Coordinates> listMatrixFactorizationComparison(Board board) throws IOException {
 
 		// DataModel load
-		DataModel datamodel = BenchmarkDataModels.MovieLens100K();
+		DataModel datamodel = getDataset(board.getDataset());
 
 		// To store results
-		LinePlot plot = new LinePlot(NUM_FACTORS, "Number of latent factors", "RMSE");
+		LinePlot plot = new LinePlot(board.getParam(), "Number of latent factors", "RMSE");
 
-		for (int i = 0; i < series.size(); i++) {
-			if (series.get(i).getName().equals("PMF")) {
+		for (int i = 0; i < board.getAlgorithms().size(); i++) {
+			if (board.getAlgorithms().get(i).equals("PMF")) {
 				// Evaluate PMF Recommender
 				plot.addSeries("PMF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender pmf = new PMF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					pmf.fit();
 
@@ -58,10 +58,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("PMF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("BNMF")) {
+			} else if (board.getAlgorithms().get(i).equals("BNMF")) {
 				// Evaluate BNMF Recommender
 				plot.addSeries("BNMF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender bnmf = new BNMF(datamodel, factors, NUM_ITERS, 0.2, 10, RANDOM_SEED);
 					bnmf.fit();
 
@@ -69,10 +69,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("BNMF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("BiasedMF")) {
+			} else if (board.getAlgorithms().get(i).equals("BiasedMF")) {
 				// Evaluate BiasedMF Recommender
 				plot.addSeries("BiasedMF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender biasedmf = new BiasedMF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					biasedmf.fit();
 
@@ -80,10 +80,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("BiasedMF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("NMF")) {
+			} else if (board.getAlgorithms().get(i).equals("NMF")) {
 				// Evaluate NMF Recommender
 				plot.addSeries("NMF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender nmf = new NMF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					nmf.fit();
 
@@ -91,10 +91,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("NMF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("CLiMF")) {
+			} else if (board.getAlgorithms().get(i).equals("CLiMF")) {
 				// Evaluate CLiMF Recommender
 				plot.addSeries("CLiMF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender climf = new CLiMF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					climf.fit();
 
@@ -102,10 +102,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("CLiMF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("SVDPlusPlus")) {
+			} else if (board.getAlgorithms().get(i).equals("SVDPlusPlus")) {
 				// Evaluate SVDPlusPlus Recommender
 				plot.addSeries("SVDPlusPlus");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender svdPlusPlus = new SVDPlusPlus(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					svdPlusPlus.fit();
 
@@ -113,10 +113,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("SVDPlusPlus", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("HPF")) {
+			} else if (board.getAlgorithms().get(i).equals("HPF")) {
 				// Evaluate HPF Recommender
 				plot.addSeries("HPF");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender hpf = new HPF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
 					hpf.fit();
 
@@ -124,10 +124,10 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 					double rmseScore = rmse.getScore();
 					plot.setValue("HPF", factors, rmseScore);
 				}
-			} else if (series.get(i).getName().equals("URP")) {
+			} else if (board.getAlgorithms().get(i).equals("URP")) {
 				// Evaluate URP Recommender
 				plot.addSeries("URP");
-				for (int factors : NUM_FACTORS) {
+				for (int factors : board.getParam()) {
 					Recommender urp = new URP(datamodel, factors, new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 }, NUM_ITERS,
 							RANDOM_SEED);
 					urp.fit();
@@ -140,7 +140,7 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 		}
 
 		plot.printData("0.000");
-
+//		plot.draw();
 		String[] parts = plot.toString().split("\\r\\n");
 		List<Coordinates> resultadoCoordenadas = new ArrayList<Coordinates>();
 		for (int i = 0; i < parts.length; i++) {
@@ -153,6 +153,51 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			}
 		}
 		return resultadoCoordenadas;
+	}
+
+	public DataModel getDataset(String dataset) throws IOException {
+		// DataModel load
+		DataModel datamodel = null;
+		switch (dataset) {
+		case "TMovieLens100K":
+			datamodel = BenchmarkDataModels.MovieLens100K();
+			break;
+		case "MovieLens1M":
+			datamodel = BenchmarkDataModels.MovieLens1M();
+			break;
+
+		case "MovieLens10M":
+			datamodel = BenchmarkDataModels.MovieLens10M();
+			break;
+
+		case "FilmTrust":
+			datamodel = BenchmarkDataModels.FilmTrust();
+			break;
+
+		case "BookCrossing":
+			datamodel = BenchmarkDataModels.BookCrossing();
+			break;
+
+		case "LibimSeTi":
+			datamodel = BenchmarkDataModels.LibimSeTi();
+			break;
+
+		case "MyAnimeList":
+			datamodel = BenchmarkDataModels.MyAnimeList();
+			break;
+
+		case "Jester":
+			datamodel = BenchmarkDataModels.Jester();
+			break;
+
+		case "Netflix Prize":
+			datamodel = BenchmarkDataModels.NetflixPrize();
+			break;
+		default:
+			break;
+		}
+
+		return datamodel;
 	}
 
 }
