@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cf4j.demo.entity.Coordinates;
+import com.cf4j.demo.entity.RecomenderResponse;
 import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.service.MatrixFactorizationComparisonService;
 
@@ -29,10 +30,10 @@ public class MatrixFactorizationComparisonResource {
 
 	@PostMapping("/matrixFactorizationComparison")
 	@ResponseBody
-	public ResponseEntity<List<Coordinates>> listMatrixFactorizationComparison(@RequestBody Board board)
+	public ResponseEntity<List<RecomenderResponse>> listMatrixFactorizationComparison(@RequestBody Board board)
 			throws IOException {
-		List<Coordinates> result = matrixFactorizationComparisonService.listMatrixFactorizationComparison(board);
-		return new ResponseEntity<List<Coordinates>>(result, HttpStatus.OK);
+		List<RecomenderResponse> result = matrixFactorizationComparisonService.listMatrixFactorizationComparison(board);
+		return new ResponseEntity<List<RecomenderResponse>>(result, HttpStatus.OK);
 
 	}
 

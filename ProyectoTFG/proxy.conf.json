@@ -1,0 +1,8 @@
+{   
+  "/cf4j/*": {
+  "target": "http://localhost:8081",
+  "secure": false,
+  "timeout": 360000,
+  "logLevel" : "debug"
+ }
+}
