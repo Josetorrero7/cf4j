@@ -1,0 +1,19 @@
+[{
+    "name": "TMovieLens100K"
+  },{
+    "name": "MovieLens1M"
+  },{
+    "name": "MovieLens10M"
+  },{
+    "name": "FilmTrust"
+  }, {
+    "name": "BookCrossing"
+  }, {
+    "name": "LibimSeTi"
+  }, {
+    "name": "MyAnimeList"
+  }, {
+    "name": "Jester"
+  }, {
+    "name": "Netflix Prize"
+  }]

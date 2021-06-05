@@ -1,0 +1,186 @@
+[
+    {
+      "name": "PMF",
+      "color": null,
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Lambda",
+        "key": "lambda",
+        "value": ""
+      }, {
+        "label": "Gamma",
+        "key": "gamma",
+        "value": ""
+      }]
+    },
+    {
+      "name": "BNMF",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Alpha",
+        "key": "alpha",
+        "value": ""
+      }, {
+        "label": "Beta",
+        "key": "beta",
+        "value": ""
+      }, {
+        "label": "R",
+        "key": "r",
+        "value": ""
+      }]
+    },
+    {
+      "name": "BiasedMF",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Lambda",
+        "key": "lambda",
+        "value": ""
+      }, {
+        "label": "Gamma",
+        "key": "gamma",
+        "value": ""
+      }]
+    },
+    {
+      "name": "NMF",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }]
+    },
+    {
+      "name": "CLiMF",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Lambda",
+        "key": "lambda",
+        "value": ""
+      }, {
+        "label": "Gamma",
+        "key": "gamma",
+        "value": ""
+      }, {
+        "label": "Threshold",
+        "key": "threshold",
+        "value": ""
+      }]
+    },
+    {
+      "name": "SVDPlusPlus",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Lambda",
+        "key": "lambda",
+        "value": ""
+      }, {
+        "label": "Gamma",
+        "key": "gamma",
+        "value": ""
+      }]
+    },
+    {
+      "name": "HPF",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "A",
+        "key": "a",
+        "value": ""
+      }, {
+        "label": "aPrime",
+        "key": "aPrime",
+        "value": ""
+      }, {
+        "label": "bPrime",
+        "key": "bPrime",
+        "value": ""
+      }, {
+        "label": "C",
+        "key": "c",
+        "value": ""
+      }, {
+        "label": "cPrime",
+        "key": "cPrime",
+        "value": ""
+      }, {
+        "label": "dPrime",
+        "key": "dPrime",
+        "value": ""
+      }]
+    },
+    {
+      "name": "URP",
+      "color": "null",
+      "params": [{
+        "label": "N.Factors",
+        "key": "numFactors",
+        "value": ""
+      }, {
+        "label": "N.iters",
+        "key": "numIters",
+        "value": ""
+      }, {
+        "label": "Ratings",
+        "key": "ratings",
+        "value": ""
+      }, {
+        "label": "H",
+        "key": "h",
+        "value": ""
+      }]
+    }
+  ]

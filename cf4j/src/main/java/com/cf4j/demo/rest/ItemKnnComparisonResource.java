@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cf4j.demo.entity.Coordinates;
-
+import com.cf4j.demo.entity.RecomenderResponse;
 import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.service.ItemKnnComparisonService;
 
@@ -32,10 +31,10 @@ public class ItemKnnComparisonResource {
 
 	@PostMapping("/itemKnnComparison")
 	@ResponseBody
-	public ResponseEntity<List<Coordinates>> listItemKnnComparison(@RequestBody List<Board> series)
+	public ResponseEntity<List<RecomenderResponse>> listItemKnnComparison(@RequestBody List<Board> series)
 			throws IOException {
-		List<Coordinates> result = itemKnnComparisonService.listItemKnnComparison(series);
-		return new ResponseEntity<List<Coordinates>>(result, HttpStatus.OK);
+		List<RecomenderResponse> result = itemKnnComparisonService.listItemKnnComparison(series);
+		return new ResponseEntity<List<RecomenderResponse>>(result, HttpStatus.OK);
 
 	}
 }

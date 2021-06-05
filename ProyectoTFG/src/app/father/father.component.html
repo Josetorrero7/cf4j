@@ -5,7 +5,8 @@
         <div class="section-heading">Algoritmos</div>
         <div cdkDropList #pendingList="cdkDropList" [ngClass]="{'disableDiv': !done.length}" [cdkDropListData]="alg"
           [cdkDropListConnectedTo]="[doneList,reviewList]" class="item-list" (cdkDropListDropped)="drop($event)">
-          <div class="item-box-{{item.name}}" *ngFor="let item of alg" cdkDrag>{{item.name}}</div>
+          <div class="item-box" *ngFor="let item of alg" cdkDrag>{{item.name}}
+          </div>
         </div>
       </div>
     </div>
@@ -15,7 +16,27 @@
 
         <div cdkDropList #doneList="cdkDropList" [cdkDropListData]="done"
           [cdkDropListConnectedTo]="[pendingList,reviewList]" class="item-list" (cdkDropListDropped)="drop($event)">
-          <div class="item-box-{{item.name}}" *ngFor="let item of done" cdkDrag>{{item.name}}</div>
+          <div id="{{item.name}}" class="item-box" *ngFor="let item of done" cdkDrag>{{item.name}}
+            <div *ngIf=isAlg(item.name) class="form-inline">
+              <label for="nItem" class="mr-1">Según rango:</label>
+              <select [ngClass]="'form-control mediumInput'" [(ngModel)]="item.rangeDynamic">
+                <option [ngValue]="null" disabled>Selecciona</option>
+                <option *ngFor="let param of item.params" [ngValue]="param">{{param.label}}</option>
+              </select>
+            </div>
+            <div class="form-inline d-flex justify-content-between" *ngIf=isAlg(item.name)>
+              <div class="form-group ml-2" *ngFor="let param of item.params">
+                <div *ngIf="!item.rangeDynamic || (item.rangeDynamic && item.rangeDynamic.label !== param.label)">
+                  <label for="nItem" class="mr-1">{{param.label}}:</label>
+                  <input class="form-control smallInput" [(ngModel)]="param.value" type="text">
+                </div>
+              </div>
+              <div class="form-group ml-2">
+                <label for="nItem" class="mr-1">Color:</label>
+                <input type="color" (change)="changeColor(item.name,item.color)" [(ngModel)]="item.color">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -34,49 +55,84 @@
       <span class="sr-only">Loading...</span>
     </div>
   </div> -->
-  <div class="d-flex justify-content-around button-container row">
-    <div class="col">
-      <form [formGroup]="fromAdd">
-        <div class="form-group">
-          <label for="range">Añada valores de rango</label>
-          <select [ngClass]="'form-control'" formControlName="range">
-            <option [ngValue]="null" disabled>Selecciona</option>
-            <option *ngFor="let r of ranges" [ngValue]="r">{{r}}</option>
-          </select>
-          <button class="btn btn-outline-secondary" (click)="selectRanges = []">
-            Limpiar Rango
-          </button>
-          <input class="btn btn-outline-primary" value="Añadir" type="submit"
-            (click)="selectRanges.push(this.fromAdd.value.range)" />
+  <div class="d-flex justify-content-around button-container">
+    <form [formGroup]="fromAdd" (ngSubmit)="applyBoard()" class="w-100">
+      <div class="row">
+        <div class="col">
+          <div class="containerParam w-50 form-inline justify-content-between mb-3">
+            <h6 class="p-2">Semilla</h6>
+            <input [ngClass]="'form-control mediumInput mr-3'" formControlName="semilla" type="number">
+          </div>
+          <div class="containerParam">
+            <div class="form-inline justify-content-between mb-3">
+              <h6 class="p-2">Medida de Calidad</h6>
+              <select [ngClass]="'form-control mediumInput mr-3'" formControlName="qualityMeasure">
+                <option [ngValue]="null" disabled>Selecciona</option>
+                <option *ngFor="let qM of qualityMeasure" [ngValue]="qM">{{qM.name}}</option>
+              </select>
+            </div>
+            <div class="row ">
+              <div class="col">
+                <div class="row mb-3">
+                  <label
+                    *ngIf="this.fromAdd.value.qualityMeasure && this.fromAdd.value.qualityMeasure.numberOfRecommendations"
+                    class="col-9  ml-3">N. de recomendaciones:</label>
+                  <input
+                    *ngIf="this.fromAdd.value.qualityMeasure && this.fromAdd.value.qualityMeasure.numberOfRecommendations"
+                    [ngClass]="'form-control mediumInput50'" formControlName="recommendations" type="number">
+                </div>
+              </div>
+              <div class="col">
+                <div class="row justify-content-end mr-3 mb-3">
+                  <label
+                    *ngIf="this.fromAdd.value.qualityMeasure && this.fromAdd.value.qualityMeasure.relevantThreshold"
+                    class="col-5">Umbral:</label>
+                  <input
+                    *ngIf="this.fromAdd.value.qualityMeasure && this.fromAdd.value.qualityMeasure.relevantThreshold"
+                    [ngClass]="'form-control mediumInput50'" formControlName="threshold" type="number">
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </form>
-    </div>
-    <div class="col">
+        <div class="col containerParam ">
+          <div class="form-inline justify-content-between mb-1">
+            <h6 class="p-2">Valores de Experimento</h6>
+            <input [ngClass]="'form-control mediumInput'" type="number" formControlName="range">
+          </div>
+          <div class=" form-group justify-content-center row">
+            <button class="btn btn-dark w-25 m-2" (click)="selectRanges = [];resultOK = false; submit = false">
+              Limpiar Rango
+            </button>
+            <input class="btn btn-primary w-25 m-2" value="Añadir" (click)="pushRange()" />
+          </div>
+          <label *ngIf="this.fromAdd.value.valuesDynamic && selectRanges.length"
+            for="range">{{this.fromAdd.value.valuesDynamic.label}}:</label>
+          <label class="valueRange mb-3" *ngFor="let sR of selectRanges">{{sR}}</label>
 
-      <label for="range">Rango:</label>
-      <br>
-      <label class="valueRange" *ngFor="let sR of selectRanges">{{sR}}</label>
-
-    </div>
-    <div class="col d-flex justify-content-end text-right">
-      <form [formGroup]="fromRun" (ngSubmit)="applyBoard()">
-        <button class="btn btn-secondary m-2" (click)="resetBoard()">
-          Limpiar Tablero
-        </button>
-        <br>
-        <input *ngIf="!spinner" class="btn btn-primary m-2" value="Ejecutar" type="submit" (click)="submit=true" />
-        <button *ngIf="spinner" class="btn btn-primary m-2" type="button" disabled>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-          Cargando...
-        </button>
-        <br>
-        <small *ngIf="submit && !camposCompleted()" id="passwordHelp" class="text-danger">
-          Datos insuficientes
-        </small>
-      </form>
-    </div>
-    <app-graphic *ngIf="resultOK" [param]="selectRanges" [resultParam]="resultParam">
-    </app-graphic>
+        </div>
+        <div class="col flex-column d-flex justify-content-end align-items-end text-right">
+          <div>
+            <app-graphic *ngIf="resultOK" [param]="selectRanges" [resultParam]="resultParam">
+            </app-graphic>
+          </div>
+          <div class="form-inline">
+            <button class="btn  btn-dark  m-2 " (click)="resetBoard()">
+              Limpiar Tablero
+            </button>
+            <input *ngIf="!spinner" class="btn btn-primary m-2 " value="Ejecutar" type="submit" (click)="submit=true" />
+            <button *ngIf="spinner" class="btn btn-primary m-2 " type="button" disabled>
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Cargando...
+            </button>
+            <br>
+          </div>
+          <small *ngIf="submit && !camposCompleted()" id="passwordHelp" class="text-danger">
+            Datos insuficientes
+          </small>
+        </div>
+      </div>
+    </form>
   </div>
 
 

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cf4j.demo.entity.Coordinates;
 import com.cf4j.demo.entity.RecomenderResponse;
 import com.cf4j.demo.entity.Board;
 import com.cf4j.demo.service.MatrixFactorizationComparisonService;

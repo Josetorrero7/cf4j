@@ -3,39 +3,49 @@ package com.cf4j.demo.entity;
 import java.util.List;
 
 public class RecomenderResponse {
-	private String algorithm;
-	private List<Integer> param;
+	private Algorithm algorithm;
 	private List<Double> results;
+	private List<String> range;
 
 	public RecomenderResponse() {
 		super();
 	}
-	
-	public RecomenderResponse(String algorithm, List<Integer> param, List<Double> results) {
+
+
+	public RecomenderResponse(Algorithm algorithm, List<Double> results, List<String> range) {
 		super();
 		this.algorithm = algorithm;
-		this.param = param;
 		this.results = results;
+		this.range = range;
 	}
 
-	public String getAlgorithm() {
+
+	public Algorithm getAlgorithm() {
 		return algorithm;
 	}
-	public void setAlgorithm(String algorithm) {
+
+	public void setAlgorithm(Algorithm algorithm) {
 		this.algorithm = algorithm;
 	}
+
 	public List<Double> getResults() {
 		return results;
 	}
+
 	public void setResults(List<Double> results) {
 		this.results = results;
 	}
-	public List<Integer> getParam() {
-		return param;
+
+	public List<String> getRange() {
+		return range;
 	}
-	public void setParam(List<Integer> param) {
-		this.param = param;
+
+	public void setRange(List<String> range) {
+		this.range = range;
 	}
+
+
+
 
 
 

@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.cf4j.demo.entity.Board;
-import com.cf4j.demo.entity.Coordinates;
+import com.cf4j.demo.entity.RecomenderResponse;
 import com.cf4j.demo.service.ItemKnnComparisonService;
 
 import es.upm.etsisi.cf4j.data.BenchmarkDataModels;
@@ -30,7 +30,7 @@ public class ItemKnnComparisonServiceImpl implements ItemKnnComparisonService {
 	private static final ItemKNN.AggregationApproach AGGREGATION_APPROACH = ItemKNN.AggregationApproach.MEAN;
 
 	@Override
-	public List<Coordinates> listItemKnnComparison(List<Board> series) throws IOException {
+	public List<RecomenderResponse> listItemKnnComparison(List<Board> series) throws IOException {
 
 		// DataModel load
 		DataModel datamodel = BenchmarkDataModels.MovieLens100K();

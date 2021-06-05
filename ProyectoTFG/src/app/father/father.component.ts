@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { FatherService } from './father.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-// import { Chart } from 'chart.js';
+import { Observable } from 'rxjs';
+import { Dataset } from '../models/dataset.model';
+import { QualityMesure } from '../models/qualityMesure.model';
+import { Graphic } from '../models/graphic.model';
+
 @Component({
   selector: 'app-father',
   templateUrl: './father.component.html',
@@ -10,175 +14,61 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class FatherComponent {
 
-  alg = [
-    {
-      name: 'PMF',
-      color: 'rgb(255, 99, 132)'
-    },
-    {
-      name: 'BNMF',
-      color: 'rgb(153, 102, 255)'
-    },
-    {
-      name: 'BiasedMF',
-      color: 'rgb(177, 79, 164)'
-    },
-    {
-      name: 'NMF',
-      color: 'rgb(107, 9, 91)'
-    },
-    {
-      name: 'CLiMF',
-      color: 'rgb(69, 107, 9)'
-    },
-    {
-      name: 'SVDPlusPlus',
-      color: 'rgb(171, 218, 64)'
-    },
-    {
-      name: 'HPF',
-      color: 'rgb(75, 192, 192)'
-    },
-    {
-      name: 'URP',
-      color: 'rgb(228, 114, 8)'
-    }
-  ];
+  //Recogidas by Json
+  qualityMeasure: Observable<QualityMesure[]>
+  alg: Observable<Algorithm[]>
+  datasets: Observable<Dataset[]>
 
-  algDefault = [
-    {
-      name: 'PMF',
-      color: 'rgb(255, 99, 132)'
-    },
-    {
-      name: 'BNMF',
-      color: 'rgb(153, 102, 255)'
-    },
-    {
-      name: 'BiasedMF',
-      color: 'rgb(177, 79, 164)'
-    },
-    {
-      name: 'NMF',
-      color: 'rgb(107, 9, 91)'
-    },
-    {
-      name: 'CLiMF',
-      color: 'rgb(69, 107, 9)'
-    },
-    {
-      name: 'SVDPlusPlus',
-      color: 'rgb(171, 218, 64)'
-    },
-    {
-      name: 'HPF',
-      color: 'rgb(75, 192, 192)'
-    },
-    {
-      name: 'URP',
-      color: 'rgb(228, 114, 8)'
-    }
-  ];
+  //Tablero
+  done = [];
 
-  done = [
-  ];
+  //Restablecen los valores por defecto
+  algDefault: Algorithm[] = [];
+  datasetsDefault: Dataset[] = []
 
-  datasets = [{
-    name: 'TMovieLens100K',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'MovieLens1M',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'MovieLens10M',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'FilmTrust',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'BookCrossing',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'LibimSeTi',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'MyAnimeList',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'Jester',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'Netflix Prize',
-    color: 'rgb(255, 255, 255)'
-  }]
+  //Parametros disponibles en los algoritmos
+  paramsAvailable: any = []
 
-  datasetsDefault = [{
-    name: 'TMovieLens100K',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'MovieLens1M',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'MovieLens10M',
-    color: 'rgb(255, 255, 255)'
-  },
-  {
-    name: 'FilmTrust',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'BookCrossing',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'LibimSeTi',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'MyAnimeList',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'Jester',
-    color: 'rgb(255, 255, 255)'
-  }, {
-    name: 'Netflix Prize',
-    color: 'rgb(255, 255, 255)'
-  }]
+  //Valores dinamicos de la
+  selectRanges: number[] = [];
 
+  //Accion de consulta
+  submit: boolean = false;
 
-
-  ranges = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-  selectRanges = [];
-  submit = false;
-  fromRun: FormGroup;
+  //From del formulario del tablero
   fromAdd: FormGroup;
 
-  resultParam = [];
+  //Datos a pintar en la grafica
+  resultParam: Graphic[] = [];
+
+  //Resultado del back
   resultOK: boolean = false;
+
+  //Control Spinner
   spinner: boolean = false;
 
 
 
   constructor(private service: FatherService) {
-
-    this.fromRun = new FormGroup({
-      range: new FormControl({ value: null, disabled: false }, [Validators.required])
-    });
     this.fromAdd = new FormGroup({
-      range: new FormControl({ value: null, disabled: false }, [Validators.required])
+      range: new FormControl({ value: null, disabled: false }, [Validators.required]),
+      valuesDynamic: new FormControl({ value: null, disabled: false }, [Validators.required]),
+      semilla: new FormControl({ value: null, disabled: false }),
+      qualityMeasure: new FormControl({ value: null, disabled: false }),
+      recommendations: new FormControl({ value: null, disabled: false }),
+      threshold: new FormControl({ value: null, disabled: false })
     });
-
-
   }
 
   ngOnInit() {
+    this.alg = this.service.getAlgorihms();
+    this.datasets = this.service.getDatasets();
+    this.qualityMeasure = this.service.getQualityMesure();
 
+    Object.assign(this.datasetsDefault, this.datasets);
+    Object.assign(this.algDefault, this.alg);
   }
 
-  private ngOnDestroy(): void {
-  }
 
   drop(event: CdkDragDrop<string[]>) {
     if (event.previousContainer === event.container) {
@@ -188,6 +78,7 @@ export class FatherComponent {
         event.container.data,
         event.previousIndex,
         event.currentIndex);
+      this.getParamsAvailable();
     }
   }
 
@@ -204,14 +95,32 @@ export class FatherComponent {
 
     if (this.camposCompleted()) {
       let vm = this;
-      let board = [];
+      let board = JSON.parse(JSON.stringify(vm.done));
       vm.spinner = true;
-      Object.assign(board, vm.done);
-      let ds = board.shift()
+      let ds = board.shift();
+      if (this.fromAdd.value.semilla) {
+        board.forEach(element => {
+          if (element.params) {
+            element.params.push({
+              label: 'Semilla',
+              key: 'seed',
+              value: ''
+            })
+          }
+        });
+      }
       let body = {
         dataset: ds.name,
-        param: vm.selectRanges,
-        algorithms: vm.getAlg(board)
+        rangeDynamic: {
+          name: board[0].rangeDynamic.key,
+          range: vm.selectRanges
+        },
+        qualityMeasure: {
+          name: this.fromAdd.value.qualityMeasure.name,
+          numberOfRecommendations: this.fromAdd.value.qualityMeasure.numberOfRecommendations ? this.fromAdd.value.recommendations : null,
+          relevantThreshold: this.fromAdd.value.qualityMeasure.relevantThreshold ? this.fromAdd.value.threshold : null,
+        },
+        algorithms: board
       };
       vm.service.loadMFC(body).subscribe({
         next(data) {
@@ -221,14 +130,13 @@ export class FatherComponent {
           result.forEach((element, index) => {
             vm.resultParam.push(
               {
-                label: element.algorithm,
+                label: element.algorithm.name,
                 data: element.results,
                 fill: false,
-                borderColor: vm.algDefault.find(alg => alg.name === element.algorithm).color,
+                borderColor: body.algorithms[index].color,
                 tension: 0.1
               }
             );
-            // vm.resultParam = element.results;
           });
 
           vm.resultOK = true;
@@ -251,6 +159,46 @@ export class FatherComponent {
 
   camposCompleted() {
     return this.done.length && this.selectRanges.length
+  }
+
+  isAlg(obj) {
+    return this.algDefault.find(alg => alg.name === obj)
+  }
+
+  changeColor(item, color) {
+    let intro = document.getElementById(item);
+    intro.style.background = color;
+  }
+
+  getParamsAvailable() {
+    if (this.done.length > 1) {
+      if (this.done.length === 2) {
+        this.paramsAvailable = this.paramsAvailable.concat(this.done[1].params);
+      } else {
+        for (let index = 2; index < this.done.length; index++) {
+          this.paramsAvailable = this.paramsAvailable.filter((valor, indice) => {
+            return this.done[index].params.findIndex((val) => val.key === valor.key) != -1;
+          })
+        }
+      }
+    }
+  }
+
+  changeType() {
+    if (this.fromAdd.value.valuesDynamic) {
+      this.selectRanges = [];
+      this.fromAdd.patchValue({
+        range: null
+      })
+    }
+    this.resultOK = false;
+    this.submit = false;
+  }
+
+  pushRange() {
+    if (this.selectRanges.length < 14 && this.fromAdd.value.range != null) {
+      this.selectRanges.push(this.fromAdd.value.range)
+    }
   }
 
 }

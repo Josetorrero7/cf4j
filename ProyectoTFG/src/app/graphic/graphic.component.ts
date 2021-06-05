@@ -25,8 +25,6 @@ export class GraphicComponent implements OnInit {
     Chart.register(...registerables);
    }
 
-  ngOnInit() {
-    debugger
-  }
+  ngOnInit() {  }
 
 }

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.List;
 
 import com.cf4j.demo.entity.Board;
-import com.cf4j.demo.entity.Coordinates;
+import com.cf4j.demo.entity.RecomenderResponse;
 
 public interface ItemKnnComparisonService {
 	
-	List<Coordinates> listItemKnnComparison(List<Board> series)throws IOException;
+	List<RecomenderResponse> listItemKnnComparison(List<Board> series)throws IOException;
 
 }

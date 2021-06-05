@@ -46,8 +46,8 @@
 .valueRange{
   background-color: black;
   color: white;
-  padding: 3%;
-  margin: 3%;
+  padding: 1%;
+  margin: 1%;
   border-radius: 7px;
 }
 
@@ -264,4 +264,27 @@
 }
 .card p {
  font-weight: 300;
+}
+
+.smallInput{
+  width: 45px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.mediumInput{
+  width: 150px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.mediumInput50{
+  width: 50px;
+  height: 28px;
+  font-size: 10px;
+}
+
+.containerParam{
+  background-color:#adadad;
+  border-radius: 16px;
 }
