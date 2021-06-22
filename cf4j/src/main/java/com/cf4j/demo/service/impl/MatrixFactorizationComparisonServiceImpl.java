@@ -63,10 +63,8 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 	 */
 	@Override
 	public List<RecomenderResponse> listMatrixFactorizationComparison(Board board) throws IOException {
-
 		// Recogemos DataModel
 		DataModel datamodel = getDataset(board.getDataset());
-
 		// Evaluamos el parametro dinamico
 		String[] strings = board.getRangeDynamic().getRange().stream().toArray(String[]::new);
 		LinePlot plot = null;
@@ -75,54 +73,41 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			double[] intArray = Stream.of(strings).mapToDouble(Double::parseDouble).toArray();
 			plot = new LinePlot(intArray, "Number of latent " + board.getRangeDynamic().getName(),
 					board.getQualityMeasure().getName());
-
 		} else {
 			// Creamos array de Integer
 			int[] intArray = Stream.of(strings).mapToInt(Integer::parseInt).toArray();
 			plot = new LinePlot(intArray, "Number of latent " + board.getRangeDynamic().getName(),
 					board.getQualityMeasure().getName());
 		}
-
 		// Inicializamos el objeto de respuesta
 		List<RecomenderResponse> result = new ArrayList<RecomenderResponse>();
-
 		// Iteramos tantos algoritmos como tengamos
 		for (int i = 0; i < board.getAlgorithms().size(); i++) {
-
 			// Evaluamos algoritmo
 			plot.addSeries(board.getAlgorithms().get(i).getName());
-
 			// Creamos la recomendación
 			RecomenderResponse recomender = new RecomenderResponse(
 					new Algorithm(board.getAlgorithms().get(i).getName(), board.getAlgorithms().get(i).getParams()),
 					new ArrayList(), board.getRangeDynamic().getRange());
-
 			// Introduciomos parametros
 			ArrayList<String> params = this.pushParams(board.getAlgorithms().get(i).getName(),
 					board.getRangeDynamic().getName());
-
 			// Creamos Map de los parametros con su tipo correcto
 			Map<String, Object> map = this.getMap(params, board.getAlgorithms().get(i).getParams());
-
 			// Iteramos la ejecucion en funcion del tipo de dato
 			if (board.getRangeDynamic().getName().equals("lambda")
 					|| board.getRangeDynamic().getName().equals("gamma")) {
-
 				// Para los Float
 				this.iterationDouble(board.getAlgorithms().get(i).getName(), map, plot, recomender, board, datamodel);
 			} else {
-
 				// Para los Integer
 				this.iterationInteger(board.getAlgorithms().get(i).getName(), map, plot, recomender, board, datamodel);
 			}
-
 			// Añadimos la recomendación del algoritmo evaluado
 			result.add(recomender);
 		}
-
 		// Pintamos por consola el resultado
 		plot.printData("0.000");
-
 		return result;
 	}
 
