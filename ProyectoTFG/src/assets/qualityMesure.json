@@ -1,62 +1,62 @@
 [
     {
       "name": "Coverage",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "Discovery",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": true,
+      "relevantThreshold": false
     }, {
       "name": "Diversity",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": true,
+      "relevantThreshold": false
     }, {
       "name": "F1",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "true"
+      "numberOfRecommendations": true,
+      "relevantThreshold": true
     }, {
       "name": "MAE",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "Max",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "MSE",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "MSLE",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "NDCG",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": true,
+      "relevantThreshold": false
     }, {
       "name": "Novelty",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": true,
+      "relevantThreshold": false
     }, {
       "name": "Perfect",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "true"
+      "numberOfRecommendations": false,
+      "relevantThreshold": true
     }, {
       "name": "Precision",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "true"
+      "numberOfRecommendations": true,
+      "relevantThreshold": true
     }, {
       "name": "R2",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }, {
       "name": "Recall",
-      "numberOfRecommendations": "true",
-      "relevantThreshold": "true"
+      "numberOfRecommendations": true,
+      "relevantThreshold": true
     }, {
       "name": "RMSE",
-      "numberOfRecommendations": "false",
-      "relevantThreshold": "false"
+      "numberOfRecommendations": false,
+      "relevantThreshold": false
     }]

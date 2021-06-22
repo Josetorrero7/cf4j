@@ -53,247 +53,174 @@ import es.upm.etsisi.cf4j.util.plot.LinePlot;
 public class MatrixFactorizationComparisonServiceImpl implements MatrixFactorizationComparisonService {
 	public utils util = new utils();
 
-	private static final int[] NUM_FACTORS = Range.ofIntegers(5, 5, 5);
-
-	private static final int NUM_ITERS = 50;
-
-	private static final long RANDOM_SEED = 43;
-
 	public static <T, U> List<U> convertStringList(List<T> listOfString, Function<T, U> function) {
 		return listOfString.stream().map(function).collect(Collectors.toList());
 	}
 
+	/**
+	 * Método que principal de la ejecucion del programa. Evalua todos los datos que
+	 * le llegan del frontal
+	 */
 	@Override
 	public List<RecomenderResponse> listMatrixFactorizationComparison(Board board) throws IOException {
 
-		// DataModel load
+		// Recogemos DataModel
 		DataModel datamodel = getDataset(board.getDataset());
 
-		// To store results
-
+		// Evaluamos el parametro dinamico
 		String[] strings = board.getRangeDynamic().getRange().stream().toArray(String[]::new);
 		LinePlot plot = null;
 		if (board.getRangeDynamic().getName().equals("lambda") || board.getRangeDynamic().getName().equals("gamma")) {
+			// Creamos array de Float
 			double[] intArray = Stream.of(strings).mapToDouble(Double::parseDouble).toArray();
-			plot = new LinePlot(intArray, "Number of latent factors", board.getQualityMeasure().getName());
+			plot = new LinePlot(intArray, "Number of latent " + board.getRangeDynamic().getName(),
+					board.getQualityMeasure().getName());
 
 		} else {
+			// Creamos array de Integer
 			int[] intArray = Stream.of(strings).mapToInt(Integer::parseInt).toArray();
-			plot = new LinePlot(intArray, "Number of latent factors", board.getQualityMeasure().getName());
+			plot = new LinePlot(intArray, "Number of latent " + board.getRangeDynamic().getName(),
+					board.getQualityMeasure().getName());
 		}
 
+		// Inicializamos el objeto de respuesta
 		List<RecomenderResponse> result = new ArrayList<RecomenderResponse>();
 
+		// Iteramos tantos algoritmos como tengamos
 		for (int i = 0; i < board.getAlgorithms().size(); i++) {
-			if (board.getAlgorithms().get(i).getName().equals("PMF")) {
 
-				// Evaluate PMF Recommender
-				plot.addSeries("PMF");
-				RecomenderResponse recomender = new RecomenderResponse(
-						new Algorithm(board.getAlgorithms().get(i).getName(), board.getAlgorithms().get(i).getParams()),
-						new ArrayList(), board.getRangeDynamic().getRange());
+			// Evaluamos algoritmo
+			plot.addSeries(board.getAlgorithms().get(i).getName());
 
-				// Parametros
-				ArrayList<String> params = this.pushParams(board.getAlgorithms().get(i).getName(),
-						board.getRangeDynamic().getName());
+			// Creamos la recomendación
+			RecomenderResponse recomender = new RecomenderResponse(
+					new Algorithm(board.getAlgorithms().get(i).getName(), board.getAlgorithms().get(i).getParams()),
+					new ArrayList(), board.getRangeDynamic().getRange());
 
-				// Creamos Map de los parametros con su tipo correcto
-				Map<String, Object> map = this.getMap(params, board.getAlgorithms().get(i).getParams());
+			// Introduciomos parametros
+			ArrayList<String> params = this.pushParams(board.getAlgorithms().get(i).getName(),
+					board.getRangeDynamic().getName());
 
-				// Iteramos la ejecucion en funcion del tipo de dato
-				if (board.getRangeDynamic().getName().equals("lambda")
-						|| board.getRangeDynamic().getName().equals("gamma")) {
-					this.iterationDouble("PMF", map, plot, recomender, board, datamodel);
-				} else {
-					this.iterationInteger("PMF", map, plot, recomender, board, datamodel);
-				}
-				result.add(recomender);
+			// Creamos Map de los parametros con su tipo correcto
+			Map<String, Object> map = this.getMap(params, board.getAlgorithms().get(i).getParams());
+
+			// Iteramos la ejecucion en funcion del tipo de dato
+			if (board.getRangeDynamic().getName().equals("lambda")
+					|| board.getRangeDynamic().getName().equals("gamma")) {
+
+				// Para los Float
+				this.iterationDouble(board.getAlgorithms().get(i).getName(), map, plot, recomender, board, datamodel);
+			} else {
+
+				// Para los Integer
+				this.iterationInteger(board.getAlgorithms().get(i).getName(), map, plot, recomender, board, datamodel);
 			}
-//			else if (board.getAlgorithms().get(i).equals("BNMF")) {
-//				// Evaluate BNMF Recommender
-//				plot.addSeries("BNMF");
-//				RecomenderResponse recomender = new RecomenderResponse("BNMF", new ArrayList(), new ArrayList());
-//				recomender.setAlgorithm("BNMF");
-//				for (int factors : board.getParam()) {
-//					Recommender bnmf = new BNMF(datamodel, factors, NUM_ITERS, 0.2, 10, RANDOM_SEED);
-//					bnmf.fit();
-//
-//					QualityMeasure rmse = new RMSE(bnmf);
-//					double rmseScore = rmse.getScore();
-//					plot.setValue("BNMF", factors, rmseScore);
-//					recomender.getParam().add(factors);
-//					recomender.getResults().add(rmseScore);
-//				}
-//				result.add(recomender);
-//			}
-			else if (board.getAlgorithms().get(i).getName().equals("BiasedMF")) {
-				// Evaluate BiasedMF Recommender
-				plot.addSeries("BiasedMF");
-				RecomenderResponse recomender = new RecomenderResponse(
-						new Algorithm(board.getAlgorithms().get(i).getName(), board.getAlgorithms().get(i).getParams()),
-						new ArrayList(), board.getRangeDynamic().getRange());
 
-				// Parametros
-				ArrayList<String> params = this.pushParams(board.getAlgorithms().get(i).getName(),
-						board.getRangeDynamic().getName());
-
-				// Creamos Map de los parametros con su tipo correcto
-				Map<String, Object> map = this.getMap(params, board.getAlgorithms().get(i).getParams());
-
-				// Iteramos la ejecucion en funcion del tipo de dato
-				if (board.getRangeDynamic().getName().equals("lambda")
-						|| board.getRangeDynamic().getName().equals("gamma")) {
-					this.iterationDouble("BiasedMF", map, plot, recomender, board, datamodel);
-				} else {
-					this.iterationInteger("BiasedMF", map, plot, recomender, board, datamodel);
-				}
-				result.add(recomender);
-			} else if (board.getAlgorithms().get(i).getName().equals("NMF")) {
-				// Evaluate NMF Recommender
-				plot.addSeries("NMF");
-				RecomenderResponse recomender = new RecomenderResponse(
-						new Algorithm(board.getAlgorithms().get(i).getName(), board.getAlgorithms().get(i).getParams()),
-						new ArrayList(), board.getRangeDynamic().getRange());
-				// Parametros
-				ArrayList<String> params = this.pushParams(board.getAlgorithms().get(i).getName(),
-						board.getRangeDynamic().getName());
-
-				// Creamos Map de los parametros con su tipo correcto
-				Map<String, Object> map = this.getMap(params, board.getAlgorithms().get(i).getParams());
-
-				// Iteramos la ejecucion en funcion del tipo de dato
-				this.iterationInteger("NMF", map, plot, recomender, board, datamodel);
-
-				result.add(recomender);
-			}
-			// else if (board.getAlgorithms().get(i).equals("CLiMF")) {
-//				// Evaluate CLiMF Recommender
-//				plot.addSeries("CLiMF");
-//				RecomenderResponse recomender = new RecomenderResponse("CLiMF", new ArrayList(), new ArrayList());
-//				recomender.setAlgorithm("CLiMF");
-//				for (int factors : board.getParam()) {
-//					Recommender climf = new CLiMF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
-//					climf.fit();
-//
-//					QualityMeasure rmse = new RMSE(climf);
-//					double rmseScore = rmse.getScore();
-//					plot.setValue("CLiMF", factors, rmseScore);
-//					recomender.getParam().add(factors);
-//					recomender.getResults().add(rmseScore);
-//				}
-//				result.add(recomender);
-//			} else if (board.getAlgorithms().get(i).equals("SVDPlusPlus")) {
-//				// Evaluate SVDPlusPlus Recommender
-//				plot.addSeries("SVDPlusPlus");
-//				RecomenderResponse recomender = new RecomenderResponse("SVDPlusPlus", new ArrayList(), new ArrayList());
-//				recomender.setAlgorithm("SVDPlusPlus");
-//				for (int factors : board.getParam()) {
-//					Recommender svdPlusPlus = new SVDPlusPlus(datamodel, factors, NUM_ITERS, RANDOM_SEED);
-//					svdPlusPlus.fit();
-//
-//					QualityMeasure rmse = new RMSE(svdPlusPlus);
-//					double rmseScore = rmse.getScore();
-//					plot.setValue("SVDPlusPlus", factors, rmseScore);
-//					recomender.getParam().add(factors);
-//					recomender.getResults().add(rmseScore);
-//				}
-//				result.add(recomender);
-//			} else if (board.getAlgorithms().get(i).equals("HPF")) {
-//				// Evaluate HPF Recommender
-//				plot.addSeries("HPF");
-//				RecomenderResponse recomender = new RecomenderResponse("HPF", new ArrayList(), new ArrayList());
-//				for (int factors : board.getParam()) {
-//					Recommender hpf = new HPF(datamodel, factors, NUM_ITERS, RANDOM_SEED);
-//					hpf.fit();
-//
-//					QualityMeasure rmse = new RMSE(hpf);
-//					double rmseScore = rmse.getScore();
-//					plot.setValue("HPF", factors, rmseScore);
-//					recomender.getParam().add(factors);
-//					recomender.getResults().add(rmseScore);
-//				}
-//				result.add(recomender);
-//			} else if (board.getAlgorithms().get(i).equals("URP")) {
-//				// Evaluate URP Recommender
-//				plot.addSeries("URP");
-//				RecomenderResponse recomender = new RecomenderResponse("URP", new ArrayList(), new ArrayList());
-//				for (int factors : board.getParam()) {
-//					Recommender urp = new URP(datamodel, factors, new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 }, NUM_ITERS,
-//							RANDOM_SEED);
-//					urp.fit();
-//
-//					QualityMeasure rmse = new RMSE(urp);
-//					double rmseScore = rmse.getScore();
-//					plot.setValue("URP", factors, rmseScore);
-//
-//					recomender.getParam().add(factors);
-//					recomender.getResults().add(rmseScore);
-//				}
-//				result.add(recomender);
-//			}
+			// Añadimos la recomendación del algoritmo evaluado
+			result.add(recomender);
 		}
 
+		// Pintamos por consola el resultado
 		plot.printData("0.000");
-//		plot.draw();
 
-//		String[] parts = plot.toString().split("\\r\\n");
-//		List<Coordinates> resultadoCoordenadas = new ArrayList<Coordinates>();
-//		for (int i = 0; i < parts.length; i++) {
-//			if (parts[i].indexOf("|") != -1) {
-//				String[] elements = parts[i].split("\\|");
-//				if (util.isNumeric(elements[1]) && util.isNumeric(elements[2])) {
-//					resultadoCoordenadas
-//							.add(new Coordinates(Float.parseFloat(elements[1]), Float.parseFloat(elements[2])));
-//				}
-//			}
-//		}
 		return result;
 	}
 
+	/**
+	 * Método que itera los valores dinamicos de naturaleza Integer y crea la
+	 * recomendacón
+	 */
 	public void iterationInteger(String algorithm, Map<String, Object> map, LinePlot plot,
 			RecomenderResponse recomender, Board board, DataModel datamodel) {
 		List<Integer> limit = convertStringList(board.getRangeDynamic().getRange(), Integer::parseInt);
-
+		// Iteramos los valores dinamicos
 		for (int factors : limit) {
+			// Nos creamos la recomendación
 			Recommender alg = null;
+			// Añadimos a los parametros del algoritmo el valor que iteramos
 			map.put(board.getRangeDynamic().getName(), factors);
-			if (algorithm.equals("PMF")) {
-				alg = new PMF(datamodel, map);
-			} else if (algorithm.equals("BiasedMF")) {
-				alg = new BiasedMF(datamodel, map);
-			}
+			// Añadimos el resto de parametros
+			alg = this.getAlgorihm(algorithm, map, datamodel);
 			alg.fit();
+			// Recogemos la medida de calidad
 			double score = this.getQualityMeasure(alg, board.getQualityMeasure());
 			plot.setValue(algorithm, factors, score);
+			// Añadimos a nuestro resultado la ultima evaluación ejecutada
 			recomender.getResults().add(score);
 		}
 	}
 
+	/**
+	 * Método que itera los valores dinamicos de naturaleza Float y crea la
+	 * recomendacón
+	 */
 	public void iterationDouble(String algorithm, Map<String, Object> map, LinePlot plot, RecomenderResponse recomender,
 			Board board, DataModel datamodel) {
 		List<Double> limit = convertStringList(board.getRangeDynamic().getRange(), Double::parseDouble);
-
+		// Iteramos los valores dinamicos
 		for (double factors : limit) {
+			// Nos creamos la recomendación
 			Recommender alg = null;
+			// Añadimos a los parametros del algoritmo el valor que iteramos
 			map.put(board.getRangeDynamic().getName(), factors);
-			if (algorithm.equals("PMF")) {
-				alg = new PMF(datamodel, map);
-			} else if (algorithm.equals("BiasedMF")) {
-				alg = new BiasedMF(datamodel, map);
-			} else if (algorithm.equals("NMF")) {
-				alg = new NMF(datamodel, map);
-			}
+			// Añadimos el resto de parametros
+			alg = this.getAlgorihm(algorithm, map, datamodel);
 			alg.fit();
+			// Recogemos la medida de calidad
 			double score = this.getQualityMeasure(alg, board.getQualityMeasure());
 			plot.setValue(algorithm, factors, score);
+			// Añadimos a nuestro resultado la ultima evaluación ejecutada
 			recomender.getResults().add(score);
 		}
 	}
 
+	/**
+	 * Método que evalua el Algoritmo que le llega por parametro
+	 * 
+	 * @return Objeto Recommender con el algoritmo que estamos iterando
+	 */
+	public Recommender getAlgorihm(String algorithm, Map<String, Object> map, DataModel datamodel) {
+		Recommender alg = null;
+		//Evaluamos cada uno de los posibles algoritmos soportados.
+		switch (algorithm) {
+		case "PMF":
+			alg = new PMF(datamodel, map);
+			break;
+		case "BNMF":
+			alg = new BNMF(datamodel, map);
+			break;
+		case "BiasedMF":
+			alg = new BiasedMF(datamodel, map);
+			break;
+		case "NMF":
+			alg = new NMF(datamodel, map);
+			break;
+		case "CLiMF":
+			alg = new CLiMF(datamodel, map);
+			break;
+		case "SVDPlusPlus":
+			alg = new SVDPlusPlus(datamodel, map);
+			break;
+		case "HPF":
+			alg = new HPF(datamodel, map);
+			break;
+		case "URP":
+			alg = new URP(datamodel, map);
+			break;
+		default:
+			break;
+		}
+		return alg;
+	}
+
+	/**
+	 * Método que evalua la medida de calidad introducida
+	 * 
+	 * @return Objeto con la medida de calidad
+	 */
 	public double getQualityMeasure(Recommender alg, Quality qualityMeasure) {
 		double result = 0;
-//		 if (alg instanceof NMF) {
-
+		//Evaluamos cada una de las medidas de calidad soportadas.
 		switch (qualityMeasure.getName()) {
 		case "Coverage":
 			QualityMeasure coverage = new Coverage(alg);
@@ -308,7 +235,8 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			result = diversity.getScore();
 			break;
 		case "F1":
-			QualityMeasure f1 = new F1(alg, qualityMeasure.getNumberOfRecommendations(), qualityMeasure.getRelevantThreshold());
+			QualityMeasure f1 = new F1(alg, qualityMeasure.getNumberOfRecommendations(),
+					qualityMeasure.getRelevantThreshold());
 			result = f1.getScore();
 			break;
 		case "MAE":
@@ -340,7 +268,8 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			result = perfect.getScore();
 			break;
 		case "Precision":
-			QualityMeasure precision = new Precision(alg, qualityMeasure.getNumberOfRecommendations(), qualityMeasure.getRelevantThreshold());
+			QualityMeasure precision = new Precision(alg, qualityMeasure.getNumberOfRecommendations(),
+					qualityMeasure.getRelevantThreshold());
 			result = precision.getScore();
 			break;
 		case "R2":
@@ -348,25 +277,31 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			result = r2.getScore();
 			break;
 		case "Recall":
-			QualityMeasure recall = new Recall(alg, qualityMeasure.getNumberOfRecommendations(), qualityMeasure.getRelevantThreshold());
+			QualityMeasure recall = new Recall(alg, qualityMeasure.getNumberOfRecommendations(),
+					qualityMeasure.getRelevantThreshold());
 			result = recall.getScore();
 			break;
 		case "RMSE":
 			QualityMeasure rmse = new RMSE(alg);
 			result = rmse.getScore();
 			break;
-//		default:
-//			QualityMeasure rmse = new RMSE(alg);
-//			result = rmse.getScore();
-//			break;
+		default:
+			break;
 		}
 
 		return result;
 	}
 
+	/**
+	 * Método que evalua el algoritmo que estamos iterando e introduce sus
+	 * parametros
+	 * 
+	 * @return ArrayList con los parametros del algoritmo que estamos iterando
+	 */
 	public ArrayList<String> pushParams(String alg, String removeParam) {
 		ArrayList<String> params = new ArrayList<String>();
-		if (alg.equals("PMF") || alg.equals("BiasedMF")) {
+		//Evaluamos el algoritmo que estamos iterando y le introducimos sus parametros correspondientes
+		if (alg.equals("PMF") || alg.equals("BiasedMF") || alg.equals("SVDPlusPlus")) {
 			params.add("numFactors");
 			params.add("numIters");
 			params.add("lambda");
@@ -376,41 +311,79 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 			params.add("numFactors");
 			params.add("numIters");
 			params.add("seed");
+		} else if (alg.equals("BNMF")) {
+			params.add("numFactors");
+			params.add("numIters");
+			params.add("alpha");
+			params.add("beta");
+			params.add("r");
+			params.add("seed");
+		} else if (alg.equals("CLiMF")) {
+			params.add("numFactors");
+			params.add("numIters");
+			params.add("gamma");
+			params.add("lambda");
+			params.add("threshold");
+			params.add("seed");
+		} else if (alg.equals("URP")) {
+			params.add("numFactors");
+			params.add("numIters");
+			params.add("ratings");
+			params.add("H");
+			params.add("seed");
+		} else if (alg.equals("HPF")) {
+			params.add("numFactors");
+			params.add("numIters");
+			params.add("a");
+			params.add("aPrime");
+			params.add("bPrime");
+			params.add("c");
+			params.add("cPrime");
+			params.add("dPrime");
+			params.add("seed");
 		}
-
+		// Eliminamos el algorimos dinamico
 		params.remove(removeParam);
 		return params;
 	}
 
+	/**
+	 * Método que evalua los parametros del algoritmo que iteramos y crea su tipo de
+	 * dato correspondiente
+	 * 
+	 * @return Map<String, Object> con los parametros del algoritmo que estamos
+	 *         iterando y su tipo de dato correspondiente
+	 */
 	public Map<String, Object> getMap(ArrayList<String> items, List<KeyValue> params) {
 
 		Map<String, Object> map = new HashMap<String, Object>();
+		//Nos recorremos los parametros del algoritmos que estamos iterando
 		for (int j = 0; j < items.size(); j++) {
-
+			//Buscamos dentro de la lista de parametros recibidos el valor del que queremos
 			KeyValue value = utils.getKeyValue(items.get(j), params);
+			//En caso de que el valor sea distinto de null lo tratamos
 			if (value.getValue() != null) {
 				if (value.getKey().equals("")) {
 					map.put(items.get(j), value.getValue());
 				}
-				switch (value.getKey()) {
-				case "numFactors":
+				//Casteamos el valor del parametro al tipo correspondiente
+				if (value.getKey().equals("numFactors") || value.getKey().equals("numIters")) {
 					map.put(items.get(j), Integer.parseInt(value.getValue()));
-					break;
-				case "numIters":
-					map.put(items.get(j), Integer.parseInt(value.getValue()));
-					break;
-				case "lambda":
+				} else if (value.getKey().equals("lambda") || value.getKey().equals("gamma")
+						|| value.getKey().equals("alpha") || value.getKey().equals("beta") || value.getKey().equals("r")
+						|| value.getKey().equals("threshold") || value.getKey().equals("H")
+						|| value.getKey().equals("a") || value.getKey().equals("aPrime")
+						|| value.getKey().equals("bPrime") || value.getKey().equals("c")
+						|| value.getKey().equals("cPrime") || value.getKey().equals("dPrime")
+						|| value.getKey().equals("seed")) {
 					map.put(items.get(j), Double.parseDouble(value.getValue()));
-					break;
-				case "gamma":
-					map.put(items.get(j), Double.parseDouble(value.getValue()));
-					break;
-				case "seed":
-					map.put(items.get(j), Long.parseLong(value.getValue()));
-					break;
-				default:
+				} else if (value.getKey().equals("ratings")) {
+					double ratings = Double.parseDouble(value.getValue());
+					double[] arrayDouble = new double[1];
+					arrayDouble[0] = ratings;
+					map.put(items.get(j), arrayDouble);
+				} else {
 					map.put(items.get(j), value.getValue());
-					break;
 				}
 			}
 		}
@@ -419,9 +392,14 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 
 	}
 
+	/**
+	 * Método que evalua el DataModel introducido
+	 * 
+	 * @return Objeto con el DataModel introducido
+	 */
 	public DataModel getDataset(String dataset) throws IOException {
-		// DataModel load
 		DataModel datamodel = null;
+		//Evaluamos cada una de los DataModel soportados.
 		switch (dataset) {
 		case "TMovieLens100K":
 			datamodel = BenchmarkDataModels.MovieLens100K();
@@ -429,38 +407,30 @@ public class MatrixFactorizationComparisonServiceImpl implements MatrixFactoriza
 		case "MovieLens1M":
 			datamodel = BenchmarkDataModels.MovieLens1M();
 			break;
-
 		case "MovieLens10M":
 			datamodel = BenchmarkDataModels.MovieLens10M();
 			break;
-
 		case "FilmTrust":
 			datamodel = BenchmarkDataModels.FilmTrust();
 			break;
-
 		case "BookCrossing":
 			datamodel = BenchmarkDataModels.BookCrossing();
 			break;
-
 		case "LibimSeTi":
 			datamodel = BenchmarkDataModels.LibimSeTi();
 			break;
-
 		case "MyAnimeList":
 			datamodel = BenchmarkDataModels.MyAnimeList();
 			break;
-
 		case "Jester":
 			datamodel = BenchmarkDataModels.Jester();
 			break;
-
 		case "Netflix Prize":
 			datamodel = BenchmarkDataModels.NetflixPrize();
 			break;
 		default:
 			break;
 		}
-
 		return datamodel;
 	}
 
